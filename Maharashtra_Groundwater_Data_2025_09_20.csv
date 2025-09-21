@@ -1,0 +1,31 @@
+State,District,Station_Code,Station_Name,Latitude,Longitude,Well_Depth,Data_Value,Data_Time,Unit,Well_Type,Aquifer_Type,Station_Status
+Maharashtra,Akola,CGWBNG0500,Kanheri_2,20.6369,77.0449,30.0,-0.248,2025-09-20T00:00:00,m,,Semi-Confined,Active
+Maharashtra,Amravati,CGWNAG2176,Uttamsara,20.8565,77.6617,129.6,-1.317,2025-09-20T00:00:00,m,Bore Well,Semi-Confined,Active
+Maharashtra,Amravati,CGWBNG0511,Benoda_1,21.4558,78.1882,40.0,-4.507,2025-09-20T00:00:00,m,,Semi-Confined,Active
+Maharashtra,Amravati,CGWNAG2175,Wagholi_4,21.075,77.8911,200.0,-2.348,2025-09-20T00:00:00,m,Bore Well,Semi-Confined,Active
+Maharashtra,Amravati,CGWBNG0506,Talni_3,21.2859,77.9883,100.0,-1.103,2025-09-20T00:00:00,m,,Semi-Confined,Active
+Maharashtra,Amravati,CGWBNG0504,Anjangaon Surji_2,21.1633,77.3187,40.0,-22.61,2025-09-20T00:00:00,m,,Semi-Confined,Active
+Maharashtra,Amravati,CGWBNG0505,Khirgavhan_1,21.0706,77.2157,20.0,-5.517,2025-09-20T00:00:00,m,,Semi-Confined,Active
+Maharashtra,Amravati,CGWBNG0507,Dhamangaon(Rly),20.8164,78.1374,40.5,-0.872,2025-09-20T00:00:00,m,,Semi-Confined,Active
+Maharashtra,Amravati,CGWBNG0508,Kolwihir_1,21.2724,77.8507,34.05,-1.134,2025-09-20T00:00:00,m,,Semi-Confined,Active
+Maharashtra,Amravati,CGWBNG0509,Yavali_1,21.4096,78.0396,22.4,-1.07,2025-09-20T00:00:00,m,,Semi-Confined,Active
+Maharashtra,Amravati,CGWBNG0513,Karajgaon_2,21.4073,78.2003,40.0,-1.744,2025-09-20T00:00:00,m,,Semi-Confined,Active
+Maharashtra,Amravati,CGWBNG0510,Warha_2,20.9783,78.0274,30.2,-0.994,2025-09-20T00:00:00,m,,Semi-Confined,Active
+Maharashtra,Beed,CGWNAG2178,Chousala_1,18.7167,75.7,30.0,-4.234,2025-09-20T00:00:00,m,Bore Well,Semi-Confined,Active
+Maharashtra,Bhandara,CGWBNG0516,Lakhandur_1,20.7594,79.8824,34.0,-4.368,2025-09-20T00:00:00,m,,Semi-Confined,Active
+Maharashtra,Bhandara,CGWBNG0518,Warthi_1,20.2421,79.6406,42.8,-1.55,2025-09-20T00:00:00,m,,Semi-Confined,Active
+Maharashtra,Bhandara,CGWBNG0519,Adyal_1,20.943,79.7033,40.04,-1.423,2025-09-20T00:00:00,m,,Semi-Confined,Active
+Maharashtra,Chandrapur,CGWBNG0531,Morwa_3,19.9959,79.2226,35.0,-2.08,2025-09-20T00:00:00,m,,Semi-Confined,Active
+Maharashtra,Chandrapur,CGWBNG0530,Ajaypur_1,20.0086,79.4959,45.0,-5.14,2025-09-20T00:00:00,m,,Semi-Confined,Active
+Maharashtra,Chandrapur,CGWBNG0533,Saoli_1,20.0819,79.7918,30.0,-1.06,2025-09-20T00:00:00,m,,Semi-Confined,Active
+Maharashtra,Chandrapur,CGWBNG0529,Nandori(Bk),20.1914,79.0387,36.8,-9.55,2025-09-20T00:00:00,m,,Semi-Confined,Active
+Maharashtra,Chandrapur,CGWBNG0535,Nagbhir_1,20.5803,79.67,45.0,-1.931,2025-09-20T00:00:00,m,,Semi-Confined,Active
+Maharashtra,Chandrapur,CGWBNG0537,Chargaon(Dharan)_1,20.3895,79.1885,45.5,-1.921,2025-09-20T00:00:00,m,,Semi-Confined,Active
+Maharashtra,Chandrapur,CGWBNG0538,Madheri_1,20.3072,78.8516,42.6,-1.382,2025-09-20T00:00:00,m,,Semi-Confined,Active
+Maharashtra,Chandrapur,CGWNAG2180,Korpana_1,19.7431,78.9862,200.0,-0.924,2025-09-20T00:00:00,m,Bore Well,Semi-Confined,Active
+Maharashtra,Dhule,CGWBNG0625,Panakhed,21.501,75.0191,172.3,-59.08,2025-09-20T00:00:00,m,,Semi-Confined,Active
+Maharashtra,Dhule,CGWNAG2183,Bhadne,21.2492,74.6904,200.0,-5.257,2025-09-20T00:00:00,m,Bore Well,Semi-Confined,Active
+Maharashtra,Dhule,CGWNAG2182,Varzadi,21.4162,74.9075,154.0,-44.94,2025-09-20T00:00:00,m,Bore Well,Semi-Confined,Active
+Maharashtra,Dhule,CGWNAG2181,Waki Pz,20.9607,74.0345,37.9,-2.37,2025-09-20T00:00:00,m,Bore Well,Semi-Confined,Active
+Maharashtra,Gadchiroli,CGWNAG2184,Bhendala,19.9794,79.8221,182.56,-12.644,2025-09-20T00:00:00,m,Bore Well,Semi-Confined,Active
+Maharashtra,Gadchiroli,CGWNAG2185,Porla_1,20.3129,79.9831,123.5,-1.5,2025-09-20T00:00:00,m,Bore Well,Semi-Confined,Active

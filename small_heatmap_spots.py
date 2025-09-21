@@ -3,6 +3,9 @@ import folium
 from folium.plugins import HeatMap
 import re
 import numpy as np
+import os
+from supabase import create_client, Client
+from dotenv import load_dotenv
 
 def extract_year_from_date(date_str):
     """
@@ -27,31 +30,45 @@ def extract_year_from_date(date_str):
 
 def create_small_heatmap_spots():
     """
-    Create heatmap with small, varied colored spots
+    Create heatmap with small, varied colored spots using Supabase data
     """
     try:
-        print("🚀 Creating Small Heatmap Spots Map...")
+        print("🚀 Creating Small Heatmap Spots Map from Supabase...")
         
-        # Load the data
-        print("📖 Loading data from FINAL EXCEL OF Ground water.xlsx...")
-        df = pd.read_excel("FINAL EXCEL OF Ground water.xlsx")
+        # Load environment variables
+        load_dotenv('supabase_config.env')
         
-        print(f"📊 Total rows loaded: {len(df)}")
+        # Initialize Supabase client
+        supabase_url = os.getenv('SUPABASE_URL')
+        supabase_key = os.getenv('SUPABASE_KEY')
+        supabase_table = os.getenv('SUPABASE_TABLE_NAME', 'maharashtra_groundwater_data')
         
-        # Filter for 2024 data only
-        print("🔍 Filtering for 2024 data...")
-        df['Year'] = df['Date'].apply(extract_year_from_date)
-        df_2024 = df[df['Year'] == 2024].copy()
-        
-        print(f"✅ 2024 data: {len(df_2024)} records")
-        
-        if len(df_2024) == 0:
-            print("❌ No 2024 data found!")
+        if not supabase_url or not supabase_key:
+            print("❌ Supabase credentials not found in supabase_config.env")
             return False
         
-        # Remove rows with missing coordinates
-        df_2024_clean = df_2024.dropna(subset=['LATITUDE', 'LONGITUDE', 'DTWL'])
-        print(f"🧹 After removing missing coordinates: {len(df_2024_clean)} records")
+        print("🔗 Connecting to Supabase...")
+        supabase: Client = create_client(supabase_url, supabase_key)
+        
+        # Fetch data from Supabase
+        print("📖 Fetching data from Supabase...")
+        result = supabase.table(supabase_table).select("*").execute()
+        
+        if not result.data:
+            print("❌ No data found in Supabase table!")
+            return False
+        
+        # Convert to DataFrame
+        df = pd.DataFrame(result.data)
+        print(f"📊 Total rows loaded from Supabase: {len(df)}")
+        
+        # Remove rows with missing coordinates or well_depth
+        df_clean = df.dropna(subset=['latitude', 'longitude', 'well_depth'])
+        print(f"🧹 After removing missing coordinates: {len(df_clean)} records")
+        
+        if len(df_clean) == 0:
+            print("❌ No valid data found!")
+            return False
         
         # Create map
         print("🗺️ Creating map with small heatmap spots...")
@@ -60,17 +77,17 @@ def create_small_heatmap_spots():
         # Create heatmap data with proper intensity scaling
         print("🔥 Creating heatmap data with varied colors...")
         
-        # Normalize DTWL values for better color distribution
-        # Lower DTWL = higher intensity (better groundwater)
-        # Higher DTWL = lower intensity (worse groundwater)
-        max_dtwl = df_2024_clean['DTWL'].max()
-        min_dtwl = df_2024_clean['DTWL'].min()
+        # Normalize well_depth values for better color distribution
+        # Lower well_depth = higher intensity (better groundwater)
+        # Higher well_depth = lower intensity (worse groundwater)
+        max_depth = df_clean['well_depth'].max()
+        min_depth = df_clean['well_depth'].min()
         
-        # Create intensity values (inverted so lower DTWL = higher intensity)
-        df_2024_clean['intensity'] = 1 - ((df_2024_clean['DTWL'] - min_dtwl) / (max_dtwl - min_dtwl))
+        # Create intensity values (inverted so lower well_depth = higher intensity)
+        df_clean['intensity'] = 1 - ((df_clean['well_depth'] - min_depth) / (max_depth - min_depth))
         
         # Create heatmap data
-        heat_data = [[row['LATITUDE'], row['LONGITUDE'], row['intensity']] for index, row in df_2024_clean.iterrows()]
+        heat_data = [[row['latitude'], row['longitude'], row['intensity']] for index, row in df_clean.iterrows()]
         
         # Add heatmap with small radius and proper gradient
         HeatMap(
@@ -93,30 +110,30 @@ def create_small_heatmap_spots():
         # Add individual small markers for better visibility
         print("📍 Adding small individual markers...")
         
-        # Create feature groups for different DTWL categories
+        # Create feature groups for different well_depth categories
         good_group = folium.FeatureGroup(name='Good Groundwater (0-5m)', show=True)
         moderate_group = folium.FeatureGroup(name='Moderate Groundwater (5-15m)', show=True)
         poor_group = folium.FeatureGroup(name='Poor Groundwater (15-30m)', show=True)
         critical_group = folium.FeatureGroup(name='Critical Groundwater (>30m)', show=True)
         
         # Add individual points with small markers
-        for _, row in df_2024_clean.iterrows():
-            lat = row['LATITUDE']
-            lon = row['LONGITUDE']
-            dtwl = row['DTWL']
+        for _, row in df_clean.iterrows():
+            lat = row['latitude']
+            lon = row['longitude']
+            well_depth = row['well_depth']
             
             popup_html = f"""
             <div style="width: 150px;">
-                <h5 style="margin: 0;">{row['VILLAGE']}, {row['DISTRICT']}</h5>
-                <p style="margin: 2px 0;"><b>State:</b> {row['STATE_UT']}</p>
-                <p style="margin: 2px 0;"><b>DTWL:</b> {dtwl} m</p>
-                <p style="margin: 2px 0;"><b>Date:</b> {row['Date']}</p>
-                <p style="margin: 2px 0;"><b>Status:</b> {get_status_text(dtwl)}</p>
+                <h5 style="margin: 0;">{row['station_name']}, {row['district']}</h5>
+                <p style="margin: 2px 0;"><b>State:</b> {row['state']}</p>
+                <p style="margin: 2px 0;"><b>Well Depth:</b> {well_depth} m</p>
+                <p style="margin: 2px 0;"><b>Station Code:</b> {row['station_code']}</p>
+                <p style="margin: 2px 0;"><b>Status:</b> {get_status_text(well_depth)}</p>
             </div>
             """
             
             # Small markers with different colors
-            if dtwl <= 5.0:
+            if well_depth <= 5.0:
                 folium.CircleMarker(
                     location=[lat, lon],
                     radius=1.5,  # Very small radius
@@ -127,7 +144,7 @@ def create_small_heatmap_spots():
                     fillOpacity=0.7,
                     weight=0.5
                 ).add_to(good_group)
-            elif dtwl <= 15.0:
+            elif well_depth <= 15.0:
                 folium.CircleMarker(
                     location=[lat, lon],
                     radius=1.5,  # Very small radius
@@ -138,7 +155,7 @@ def create_small_heatmap_spots():
                     fillOpacity=0.7,
                     weight=0.5
                 ).add_to(moderate_group)
-            elif dtwl <= 30.0:
+            elif well_depth <= 30.0:
                 folium.CircleMarker(
                     location=[lat, lon],
                     radius=1.5,  # Very small radius
@@ -176,7 +193,7 @@ def create_small_heatmap_spots():
                     bottom: 50px; left: 50px; width: 300px; height: 200px; 
                     background-color: white; border:2px solid grey; z-index:9999; 
                     font-size:14px; padding: 15px; border-radius: 5px;">
-        <h4 style="margin: 0 0 10px 0; text-align: center;">India Groundwater Heatmap - 2024</h4>
+        <h4 style="margin: 0 0 10px 0; text-align: center;">Maharashtra Groundwater Heatmap</h4>
         <p style="margin: 5px 0;"><b>Small Heatmap Spots:</b></p>
         <p style="margin: 2px 0;"><i class="fa fa-circle" style="color:green"></i> Good (0-5m)</p>
         <p style="margin: 2px 0;"><i class="fa fa-circle" style="color:blue"></i> Moderate (5-15m)</p>
@@ -190,23 +207,23 @@ def create_small_heatmap_spots():
         
         # Add title
         title_html = '''
-        <h2 align="center" style="font-size:24px; margin: 10px 0;"><b>India Groundwater Level Map - 2024</b></h2>
-        <p align="center" style="font-size:16px; margin: 5px 0;">Small Heatmap Spots with Color Variation</p>
+        <h2 align="center" style="font-size:24px; margin: 10px 0;"><b>Maharashtra Groundwater Level Map</b></h2>
+        <p align="center" style="font-size:16px; margin: 5px 0;">Small Heatmap Spots with Color Variation (Data from Supabase)</p>
         '''
         m.get_root().html.add_child(folium.Element(title_html))
         
         # Save map
-        output_file = "india_small_heatmap_spots_2024.html"
+        output_file = "maharashtra_supabase_heatmap_spots.html"
         print(f"💾 Saving small heatmap spots map to {output_file}...")
         m.save(output_file)
         
         print("\n" + "="*60)
-        print("🎉 SMALL HEATMAP SPOTS MAP CREATED SUCCESSFULLY!")
-        print(f"📊 Total 2024 records: {len(df_2024_clean)}")
+        print("🎉 SUPABASE HEATMAP SPOTS MAP CREATED SUCCESSFULLY!")
+        print(f"📊 Total records from Supabase: {len(df_clean)}")
         print(f"🗺️ Map saved as: {output_file}")
         print("✅ Small heatmap spots with color variation!")
-        print("✅ Not all red - proper color distribution!")
-        print("✅ Small radius for clean appearance!")
+        print("✅ Data fetched from Supabase database!")
+        print("✅ Using latitude, longitude, and well_depth!")
         print("="*60)
         
         return True
@@ -215,27 +232,27 @@ def create_small_heatmap_spots():
         print(f"❌ Error creating small heatmap spots map: {e}")
         return False
 
-def get_status_text(dtwl):
+def get_status_text(well_depth):
     """
-    Get status text based on DTWL value
+    Get status text based on well_depth value
     """
-    if dtwl <= 5.0:
+    if well_depth <= 5.0:
         return "Good"
-    elif dtwl <= 15.0:
+    elif well_depth <= 15.0:
         return "Moderate"
-    elif dtwl <= 30.0:
+    elif well_depth <= 30.0:
         return "Poor"
     else:
         return "Critical"
 
 if __name__ == "__main__":
-    print("🚀 Creating Small Heatmap Spots Map...")
+    print("🚀 Creating Small Heatmap Spots Map from Supabase...")
     print("-" * 60)
     
     if create_small_heatmap_spots():
-        print("\n✅ SUCCESS! Your small heatmap spots map is ready!")
-        print("🌐 Open 'india_small_heatmap_spots_2024.html' in your browser to view!")
-        print("💡 Small heatmap spots with proper color variation!")
+        print("\n✅ SUCCESS! Your Supabase heatmap spots map is ready!")
+        print("🌐 Open 'maharashtra_supabase_heatmap_spots.html' in your browser to view!")
+        print("💡 Small heatmap spots with data from Supabase database!")
     else:
         print("\n❌ Map creation failed!")
 
